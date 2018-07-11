@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Group Chat</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+    
+    $(document).ready(function (){
+        var socket = io("http://192.168.1.172:1337/"); //1
+        var users = {};
+        var name = prompt('What is your Name');
+        socket.emit('new_user', name);
+        socket.on('user_name', function(user_name){
+        });
+        socket.on('user_data', function(user_data){
+            $('#form').submit(function(){
+                socket.emit('post_message', {name: name, message:$('#message').val()});
+                return false;
+        });
+        });
+        socket.on('show_message', function(user){
+            var form_reset = document.getElementById("form");
+            form_reset.reset();
+            $('h3').css('color', 'red');
+            $('#convo').show();
+            $('#convo').append("<h3>"+ user.name + "Says:  " + user.message + "</h3>\n");    
+        });
+    });
+
+    </script>
+</head>
+<body>
+    <div id="wrapper">
+        <div id='chat'>
+        <h1>Conversation Board</h1>
+        <div style="display:none;" id='convo'></div>
+        <form id='form' action="">
+            <input id='message' type=text value='' >
+            <input type='submit' value='Send'>
+        </form>
+        </div>
+    </div>
+</body>
+</html>
